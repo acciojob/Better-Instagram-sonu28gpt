@@ -1,25 +1,47 @@
-
-//your code here
-let draggedEL=null;
-let droppedEL=null;
-
-function dragStart(e) {
-	draggedEL=e.target;
+ 
+let dragindex = 0;
+let dropindex = 0;
+let clone = "";
+ 
+const images = document.querySelectorAll(".image");
+ 
+function drag(e) {
+  e.dataTransfer.setData("text", e.target.id);
 }
-function dragOver(e){
-	e.preventDefault();
+ 
+function allowDrop(e) {
+  e.preventDefault();
 }
+ 
 function drop(e) {
-	droppedEL=e.target;
-  let dragStyle=window.getComputedStyle(draggedEL);
-  let dropStyle=window.getComputedStyle(droppedEL);
-   let tempid=draggedEL.getAttribute('id');
-  draggedEL.setAttribute('id',droppedEL.getAttribute('id'));
-  droppedEL.setAttribute('id',tempid);
-  let tempContent=draggedEL.textContent;
-  draggedEL.textContent=droppedEL.textContent;
-  droppedEL.textContent=tempContent;
-    draggedEL=null;
-    droppedEL=null;
+  clone = e.target.cloneNode(true);
+  let data = e.dataTransfer.getData("text");
+  let nodelist = document.getElementById("parent").childNodes;
+  console.log(data, e.target.id);
+  for (let i = 0; i < nodelist.length; i++) {
+    if (nodelist[i].id == data) {
+      dragindex = i;
+    }
+  }
+ 
+  dragdrop(clone);
+ 
+  document
+    .getElementById("parent")
+    .replaceChild(document.getElementById(data), e.target);
+ 
+  document
+    .getElementById("parent")
+    .insertBefore(
+      clone,
+      document.getElementById("parent").childNodes[dragindex]
+    );
 }
-	
+ 
+const dragdrop = (image) => {
+  image.ondragstart = drag;
+  image.ondragover = allowDrop;
+  image.ondrop = drop;
+};
+ 
+images.forEach(dragdrop);
